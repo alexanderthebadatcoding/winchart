@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta
+      name="description"
+      content="Live Win Probability Chart using ESPN API"
+    />
+    <meta name="author" content="@gilbster" />
+    <meta
+      name="keywords"
+      content="ESPN, Win Probability, Live Sports, Charts, Sports Analytics"
+    />
+    <meta property="og:title" content="Win Probability Chart" />
+    <meta
+      property="og:description"
+      content="Live Win Probability Charts using ESPN API"
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://cloudywithachanceofwin.netlify.app"
+    />
+    <meta
+      property="og:image"
+      content="https://cloudywithachanceofwin.netlify.app/chart.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <menut name="twitter:title" content="Win Probability Chart" />
+    <meta
+      name="twitter:description"
+      content="Live Win Probability Charts using ESPN API"
+    />
+    <meta
+      name="twitter:image"
+      content="https://cloudywithachanceofwin.netlify.app/chart.png"
+    />
+    <title>Win Probability Chart</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: hsl(222.2 84% 4.9%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+      button {
+        background-color: #0f172a;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 8px;
+      }
+      button:hover {
+        background-color: hsl(223, 84%, 22%);
+        color: white;
+        transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: hsl(222.2 84% 4.9%);
+        border-radius: 12px;
+        border: 1px solid hsl(217.2 32.6% 17.5%);
+        overflow: hidden;
+      }
+
+      .header {
+        background: hsl(222.2 84% 4.9%);
+        border-bottom: 1px solid hsl(217.2 32.6% 17.5%);
+        color: hsl(210 40% 98%);
+        padding: 24px 32px;
+      }
+
+      .header h1 {
+        font-size: 1.875rem;
+        margin-bottom: 4px;
+        font-weight: 600;
+        letter-spacing: -0.025em;
+      }
+
+      .header p {
+        color: hsl(215 20.2% 65.1%);
+        font-size: 0.875rem;
+      }
+
+      .sport-selector {
+        padding: 24px 32px;
+        background: hsl(222.2 84% 4.9%);
+        border-bottom: 1px solid hsl(217.2 32.6% 17.5%);
+      }
+
+      .sport-selector label {
+        display: block;
+        color: hsl(215 20.2% 65.1%);
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+
+      .sport-selector select {
+        width: 100%;
+        background: hsl(222.2 47.4% 11.2%);
+        border: 1px solid hsl(217.2 32.6% 17.5%);
+        color: hsl(210 40% 98%);
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        cursor: pointer;
+      }
+
+      .sport-selector select:hover {
+        background: hsl(222.2 47.4% 13%);
+      }
+
+      .sport-selector select:focus {
+        outline: none;
+        border-color: hsl(210 40% 98%);
+      }
+
+      .game-status {
+        text-align: center;
+        padding: 12px 24px;
+        background: hsl(222.2 47.4% 11.2%);
+        border-bottom: 1px solid hsl(217.2 32.6% 17.5%);
+        color: hsl(215 20.2% 65.1%);
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .game-selector {
+        padding: 24px 32px;
+        background: hsl(222.2 84% 4.9%);
+        border-bottom: 1px solid hsl(217.2 32.6% 17.5%);
+      }
+
+      .game-selector label {
+        display: block;
+        color: hsl(215 20.2% 65.1%);
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+
+      .game-selector select {
+        width: 100%;
+        background: hsl(222.2 47.4% 11.2%);
+        border: 1px solid hsl(217.2 32.6% 17.5%);
+        color: hsl(210 40% 98%);
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        cursor: pointer;
+      }
+
+      .game-selector select:hover {
+        background: hsl(222.2 47.4% 13%);
+      }
+
+      .game-selector select:focus {
+        outline: none;
+        border-color: hsl(210 40% 98%);
+      }
+
+      .game-info {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 32px 24px;
+        background: hsl(222.2 84% 4.9%);
+        border-bottom: 1px solid hsl(217.2 32.6% 17.5%);
+      }
+
+      .team {
+        text-align: center;
+        flex: 1;
+      }
+
+      .team-name {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: hsl(210 40% 98%);
+        margin-bottom: 8px;
+      }
+
+      .team-score {
+        font-size: 3rem;
+        font-weight: 700;
+        color: hsl(210 40% 98%);
+        line-height: 1;
+      }
+
+      .vs {
+        font-size: 0.875rem;
+        color: hsl(215 20.2% 65.1%);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .chart-container {
+        padding: 32px;
+        position: relative;
+        height: 500px;
+        background: hsl(222.2 84% 4.9%);
+      }
+
+      .loading {
+        text-align: center;
+        padding: 60px;
+        font-size: 1rem;
+        color: hsl(215 20.2% 65.1%);
+      }
+
+      .error {
+        text-align: center;
+        padding: 60px;
+        color: hsl(0 84.2% 60.2%);
+        font-size: 0.875rem;
+      }
+
+      .spinner {
+        border: 3px solid hsl(217.2 32.6% 17.5%);
+        border-top: 3px solid hsl(210 40% 98%);
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Win Probability</h1>
+        <div
+          class="info"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          "
+        >
+          <p>Live game analysis and probability tracking from ESPN API.</p>
+          <button id="refreshButtonHeader" style="display: none">
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
+
+      <div class="sport-selector">
+        <label for="sportSelect">Select Sport</label>
+        <select id="sportSelect">
+          <option value="football/college-football">College Football</option>
+          <option value="football/nfl">NFL</option>
+          <option value="basketball/mens-college-basketball">
+            Men's College Basketball
+          </option>
+          <option value="basketball/womens-college-basketball">
+            Women's College Basketball
+          </option>
+          <option value="basketball/nba">NBA</option>
+        </select>
+      </div>
+
+      <div
+        class="game-selector"
+        id="gameSelectorContainer"
+        style="display: none"
+      >
+        <label for="gameSelect">Select Game</label>
+        <select id="gameSelect">
+          <option value="">Choose a game...</option>
+        </select>
+      </div>
+
+      <div class="game-status" id="gameStatus" style="display: none">
+        <span id="gameStatusText"></span>
+        <button
+          id="refreshButtonStatus"
+          style="
+            margin-left: 12px;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+          "
+        >
+          🔄 Refresh
+        </button>
+      </div>
+
+      <div id="gameInfo" class="game-info" style="display: none">
+        <div class="team" id="awayTeam">
+          <div class="team-name">-</div>
+          <div class="team-score">-</div>
+        </div>
+        <div class="vs">VS</div>
+        <div class="team" id="homeTeam">
+          <div class="team-name">-</div>
+          <div class="team-score">-</div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <div id="loading" class="loading">
+          <div class="spinner"></div>
+          <p>Loading live games...</p>
+        </div>
+        <canvas id="winProbChart" style="display: none"></canvas>
+        <div id="error" class="error" style="display: none"></div>
+      </div>
+    </div>
+
+    <script>
+      let currentChart = null;
+      let currentGames = [];
+      let currentSport = "football/college-football";
+      let currentEventId = null;
+
+      async function fetchLiveGames(sport) {
+        const response = await fetch(
+          `https://site.api.espn.com/apis/site/v2/sports/${sport}/scoreboard`
+        );
+        const data = await response.json();
+        return data;
+      }
+
+      async function fetchGameSummary(eventId, sport) {
+        const response = await fetch(
+          `https://site.api.espn.com/apis/site/v2/sports/${sport}/summary?event=${eventId}`
+        );
+        const data = await response.json();
+        return data;
+      }
+
+      function populateGameSelector(games) {
+        const select = document.getElementById("gameSelect");
+        const gameSelectorContainer = document.getElementById(
+          "gameSelectorContainer"
+        );
+
+        const liveGames = games.events.filter(
+          (event) => event.status.type.state !== "pre"
+        );
+
+        if (liveGames.length === 0) {
+          document.getElementById("loading").innerHTML =
+            "<p>No live games currently in progress</p>";
+          return;
+        }
+
+        currentGames = liveGames;
+
+        select.innerHTML = '<option value="">Choose a game...</option>';
+
+        liveGames.forEach((event) => {
+          const option = document.createElement("option");
+          option.value = event.id;
+          const homeTeam = event.competitions[0].competitors.find(
+            (c) => c.homeAway === "home"
+          );
+          const awayTeam = event.competitions[0].competitors.find(
+            (c) => c.homeAway === "away"
+          );
+          option.textContent = `${awayTeam.team.displayName} @ ${homeTeam.team.displayName}`;
+          select.appendChild(option);
+        });
+
+        gameSelectorContainer.style.display = "block";
+        document.getElementById("loading").style.display = "none";
+
+        if (liveGames.length > 0) {
+          select.value = liveGames[0].id;
+          loadGameData(liveGames[0].id);
+        }
+      }
+
+      function displayGameInfo(data, game) {
+        const gameInfo = document.getElementById("gameInfo");
+        const homeTeamDiv = document.getElementById("homeTeam");
+        const awayTeamDiv = document.getElementById("awayTeam");
+
+        const homeTeam = data.boxscore.teams[1];
+        const awayTeam = data.boxscore.teams[0];
+
+        let homeScore = "0";
+        let awayScore = "0";
+
+        if (game) {
+          const homeCompetitor = game.competitions[0].competitors.find(
+            (c) => c.homeAway === "home"
+          );
+          const awayCompetitor = game.competitions[0].competitors.find(
+            (c) => c.homeAway === "away"
+          );
+
+          if (homeCompetitor && homeCompetitor.score) {
+            homeScore = homeCompetitor.score;
+          }
+          if (awayCompetitor && awayCompetitor.score) {
+            awayScore = awayCompetitor.score;
+          }
+        }
+
+        homeTeamDiv.querySelector(".team-name").textContent =
+          homeTeam.team.displayName;
+        homeTeamDiv.querySelector(".team-score").textContent = homeScore;
+
+        awayTeamDiv.querySelector(".team-name").textContent =
+          awayTeam.team.displayName;
+        awayTeamDiv.querySelector(".team-score").textContent = awayScore;
+
+        gameInfo.style.display = "flex";
+      }
+
+      function createChart(winProbData, homeTeamColor, homeTeamName) {
+        const ctx = document.getElementById("winProbChart").getContext("2d");
+
+        if (currentChart) {
+          currentChart.destroy();
+        }
+
+        const labels = winProbData.map((_, index) => index);
+        const homeWinProbs = winProbData.map((item) => item.homeWinPercentage);
+
+        const lineColor = homeTeamColor
+          ? `#${homeTeamColor}`
+          : "hsl(210 40% 98%)";
+        const fillColor = homeTeamColor
+          ? `#${homeTeamColor}40`
+          : "hsla(210 40% 98% / 0.1)";
+
+        currentChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Home Team Win Probability",
+                data: homeWinProbs,
+                borderColor: lineColor,
+                backgroundColor: fillColor,
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: lineColor,
+                pointHoverBorderColor: "hsl(222.2 84% 4.9%)",
+                pointHoverBorderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: "top",
+                labels: {
+                  color: "hsl(210 40% 98%)",
+                  font: {
+                    size: 13,
+                    weight: "500",
+                  },
+                  padding: 16,
+                },
+              },
+              tooltip: {
+                mode: "index",
+                intersect: false,
+                backgroundColor: "hsl(222.2 47.4% 11.2%)",
+                borderColor: "hsl(217.2 32.6% 17.5%)",
+                borderWidth: 1,
+                padding: 12,
+                titleColor: "hsl(210 40% 98%)",
+                bodyColor: "hsl(215 20.2% 65.1%)",
+                titleFont: {
+                  size: 13,
+                  weight: "500",
+                },
+                bodyFont: {
+                  size: 12,
+                },
+                callbacks: {
+                  title: function () {
+                    return "";
+                  },
+                  label: function (context) {
+                    const percentage = (context.parsed.y * 100).toFixed(0);
+                    return `${homeTeamName} ${percentage}%`;
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                display: false,
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "Win Probability",
+                  color: "hsl(215 20.2% 65.1%)",
+                  font: {
+                    size: 12,
+                    weight: "500",
+                  },
+                },
+                min: 0,
+                max: 1,
+                ticks: {
+                  color: "hsl(215 20.2% 65.1%)",
+                  callback: function (value) {
+                    return (value * 100).toFixed(0) + "%";
+                  },
+                },
+                grid: {
+                  color: "hsl(217.2 32.6% 17.5%)",
+                  drawBorder: false,
+                },
+                border: {
+                  display: false,
+                },
+              },
+            },
+            interaction: {
+              intersect: false,
+              mode: "index",
+            },
+          },
+        });
+      }
+
+      async function loadGameData(eventId) {
+        const canvas = document.getElementById("winProbChart");
+        const errorDiv = document.getElementById("error");
+        const loading = document.getElementById("loading");
+        const gameStatusDiv = document.getElementById("gameStatus");
+        const gameStatusText = document.getElementById("gameStatusText");
+
+        currentEventId = eventId;
+
+        try {
+          loading.style.display = "block";
+          loading.innerHTML =
+            '<div class="spinner"></div><p>Loading game data...</p>';
+          canvas.style.display = "none";
+          errorDiv.style.display = "none";
+          gameStatusDiv.style.display = "none";
+
+          const game = currentGames.find((g) => g.id === eventId);
+          let homeTeamColor = null;
+          let homeTeamName = "Home";
+
+          if (game) {
+            const statusText = game.status.type.shortDetail;
+            gameStatusText.textContent = statusText;
+            gameStatusDiv.style.display = "block";
+
+            const homeTeam = game.competitions[0].competitors.find(
+              (c) => c.homeAway === "home"
+            );
+            if (homeTeam) {
+              if (homeTeam.team.color) {
+                if (
+                  homeTeam.team.color === "000000" &&
+                  homeTeam.team.alternateColor
+                ) {
+                  homeTeamColor = homeTeam.team.alternateColor;
+                } else {
+                  homeTeamColor = homeTeam.team.color;
+                }
+              }
+              homeTeamName = homeTeam.team.displayName;
+            }
+          }
+
+          const data = await fetchGameSummary(eventId, currentSport);
+
+          if (!data.winprobability || data.winprobability.length === 0) {
+            throw new Error("No win probability data available for this game");
+          }
+
+          displayGameInfo(data, game);
+          createChart(data.winprobability, homeTeamColor, homeTeamName);
+
+          loading.style.display = "none";
+          canvas.style.display = "block";
+        } catch (error) {
+          loading.style.display = "none";
+          errorDiv.textContent = error.message;
+          errorDiv.style.display = "block";
+        }
+      }
+
+      async function refreshCurrentGame() {
+        if (!currentEventId) return;
+
+        try {
+          // Fetch updated scoreboard to get latest scores and status
+          const games = await fetchLiveGames(currentSport);
+          const liveGames = games.events.filter(
+            (event) => event.status.type.state !== "pre"
+          );
+
+          // Update currentGames with fresh data
+          currentGames = liveGames;
+
+          // Reload the current game
+          await loadGameData(currentEventId);
+        } catch (error) {
+          console.error("Failed to refresh game:", error);
+        }
+      }
+
+      async function init() {
+        const loading = document.getElementById("loading");
+        const errorDiv = document.getElementById("error");
+
+        try {
+          const games = await fetchLiveGames(currentSport);
+          populateGameSelector(games);
+
+          document
+            .getElementById("sportSelect")
+            .addEventListener("change", async (e) => {
+              currentSport = e.target.value;
+              currentEventId = null;
+
+              document.getElementById("winProbChart").style.display = "none";
+              document.getElementById("gameInfo").style.display = "none";
+              document.getElementById("gameStatus").style.display = "none";
+
+              loading.style.display = "block";
+              loading.innerHTML =
+                '<div class="spinner"></div><p>Loading live games...</p>';
+
+              try {
+                const games = await fetchLiveGames(currentSport);
+                populateGameSelector(games);
+              } catch (error) {
+                loading.style.display = "none";
+                errorDiv.textContent = "Failed to load games: " + error.message;
+                errorDiv.style.display = "block";
+              }
+            });
+
+          // Both refresh buttons call the same function
+          document
+            .getElementById("refreshButtonHeader")
+            .addEventListener("click", refreshCurrentGame);
+
+          document
+            .getElementById("refreshButtonStatus")
+            .addEventListener("click", refreshCurrentGame);
+
+          document
+            .getElementById("gameSelect")
+            .addEventListener("change", (e) => {
+              if (e.target.value) {
+                loadGameData(e.target.value);
+              }
+            });
+        } catch (error) {
+          loading.style.display = "none";
+          errorDiv.textContent = "Failed to load live games: " + error.message;
+          errorDiv.style.display = "block";
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>
