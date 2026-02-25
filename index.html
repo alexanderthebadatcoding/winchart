@@ -277,7 +277,10 @@
         <label for="sportSelect">Select Sport</label>
         <select id="sportSelect">
           <!-- <option value="football/college-football">College Football</option> -->
-          <option value="football/nfl">NFL</option>
+          <!--<option value="football/nfl">NFL</option> -->
+          <option value="baseball/mlb">
+            MLB
+          </option>
           <option value="basketball/mens-college-basketball">
             Men's College Basketball
           </option>
@@ -339,7 +342,7 @@
     <script>
       let currentChart = null;
       let currentGames = [];
-      let currentSport = "football/nfl";
+      let currentSport = "baseball/mlb";
       let currentEventId = null;
 
       async function fetchLiveGames(sport) {
