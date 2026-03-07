@@ -28,7 +28,7 @@
       content="https://cloudywithachanceofwin.netlify.app/chart.png"
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <menut name="twitter:title" content="Win Probability Chart" />
+    <meta name="twitter:title" content="Win Probability Chart" />
     <meta
       name="twitter:description"
       content="Live Win Probability Charts using ESPN API"
@@ -54,6 +54,7 @@
         min-height: 100vh;
         padding: 20px;
       }
+
       button {
         background-color: #0f172a;
         border: none;
@@ -66,6 +67,7 @@
         cursor: pointer;
         border-radius: 8px;
       }
+
       button:hover {
         background-color: hsl(223, 84%, 22%);
         color: white;
@@ -282,8 +284,6 @@
       <div class="sport-selector">
         <label for="sportSelect">Select Sport</label>
         <select id="sportSelect">
-          <!-- <option value="football/college-football">College Football</option> -->
-          <!--<option value="football/nfl">NFL</option> -->
           <option value="baseball/mlb">MLB</option>
           <option value="basketball/mens-college-basketball">
             Men's College Basketball
@@ -382,7 +382,6 @@
         }
 
         currentGames = liveGames;
-
         select.innerHTML = '<option value="">Choose a game...</option>';
 
         liveGames.forEach((event) => {
@@ -425,19 +424,15 @@
           const awayCompetitor = game.competitions[0].competitors.find(
             (c) => c.homeAway === "away",
           );
-
-          if (homeCompetitor && homeCompetitor.score) {
+          if (homeCompetitor && homeCompetitor.score)
             homeScore = homeCompetitor.score;
-          }
-          if (awayCompetitor && awayCompetitor.score) {
+          if (awayCompetitor && awayCompetitor.score)
             awayScore = awayCompetitor.score;
-          }
         }
 
         homeTeamDiv.querySelector(".team-name").textContent =
           homeTeam.team.displayName;
         homeTeamDiv.querySelector(".team-score").textContent = homeScore;
-
         awayTeamDiv.querySelector(".team-name").textContent =
           awayTeam.team.displayName;
         awayTeamDiv.querySelector(".team-score").textContent = awayScore;
@@ -492,10 +487,7 @@
                 position: "top",
                 labels: {
                   color: "hsl(210 40% 98%)",
-                  font: {
-                    size: 13,
-                    weight: "500",
-                  },
+                  font: { size: 13, weight: "500" },
                   padding: 16,
                 },
               },
@@ -508,13 +500,8 @@
                 padding: 12,
                 titleColor: "hsl(210 40% 98%)",
                 bodyColor: "hsl(215 20.2% 65.1%)",
-                titleFont: {
-                  size: 13,
-                  weight: "500",
-                },
-                bodyFont: {
-                  size: 12,
-                },
+                titleFont: { size: 13, weight: "500" },
+                bodyFont: { size: 12 },
                 callbacks: {
                   title: function () {
                     return "";
@@ -527,18 +514,13 @@
               },
             },
             scales: {
-              x: {
-                display: false,
-              },
+              x: { display: false },
               y: {
                 title: {
                   display: true,
                   text: "Win Probability",
                   color: "hsl(215 20.2% 65.1%)",
-                  font: {
-                    size: 12,
-                    weight: "500",
-                  },
+                  font: { size: 12, weight: "500" },
                 },
                 min: 0,
                 max: 1,
@@ -552,15 +534,10 @@
                   color: "hsl(217.2 32.6% 17.5%)",
                   drawBorder: false,
                 },
-                border: {
-                  display: false,
-                },
+                border: { display: false },
               },
             },
-            interaction: {
-              intersect: false,
-              mode: "index",
-            },
+            interaction: { intersect: false, mode: "index" },
           },
         });
       }
@@ -587,8 +564,7 @@
           let homeTeamName = "Home";
 
           if (game) {
-            const statusText = game.status.type.shortDetail;
-            gameStatusText.textContent = statusText;
+            gameStatusText.textContent = game.status.type.shortDetail;
             gameStatusDiv.style.display = "block";
 
             const homeTeam = game.competitions[0].competitors.find(
@@ -596,14 +572,11 @@
             );
             if (homeTeam) {
               if (homeTeam.team.color) {
-                if (
+                homeTeamColor =
                   homeTeam.team.color === "000000" &&
                   homeTeam.team.alternateColor
-                ) {
-                  homeTeamColor = homeTeam.team.alternateColor;
-                } else {
-                  homeTeamColor = homeTeam.team.color;
-                }
+                    ? homeTeam.team.alternateColor
+                    : homeTeam.team.color;
               }
               homeTeamName = homeTeam.team.displayName;
             }
@@ -622,6 +595,7 @@
           canvas.style.display = "block";
           document.getElementById("downloadChartButton").style.display =
             "inline-block";
+          document.getElementById("refreshButtonHeader").style.display = "none";
         } catch (error) {
           loading.style.display = "none";
           errorDiv.textContent = error.message;
@@ -631,18 +605,11 @@
 
       async function refreshCurrentGame() {
         if (!currentEventId) return;
-
         try {
-          // Fetch updated scoreboard to get latest scores and status
           const games = await fetchLiveGames(currentSport);
-          const liveGames = games.events.filter(
+          currentGames = games.events.filter(
             (event) => event.status.type.state !== "pre",
           );
-
-          // Update currentGames with fresh data
-          currentGames = liveGames;
-
-          // Reload the current game
           await loadGameData(currentEventId);
         } catch (error) {
           console.error("Failed to refresh game:", error);
@@ -652,13 +619,11 @@
       function downloadChartAsPng() {
         if (!currentChart) return;
 
-        const originalCanvas = document.getElementById("winProbChart");
         const homeTeamDiv = document.getElementById("homeTeam");
         const awayTeamDiv = document.getElementById("awayTeam");
         const gameStatusText =
           document.getElementById("gameStatusText").textContent;
 
-        // Get team info from DOM
         const homeTeamName =
           homeTeamDiv.querySelector(".team-name").textContent;
         const homeTeamScore =
@@ -668,91 +633,126 @@
         const awayTeamScore =
           awayTeamDiv.querySelector(".team-score").textContent;
 
-        // Create a fixed-size canvas for export (1200 x 600)
-        const tempCanvas = document.createElement("canvas");
         const teamInfoHeight = 150;
-        tempCanvas.width = 1200;
-        tempCanvas.height = 600;
+        const exportWidth = 1200;
+        const exportChartHeight = 450;
 
-        const ctx = tempCanvas.getContext("2d");
+        const exportChartCanvas = document.createElement("canvas");
+        exportChartCanvas.width = exportWidth;
+        exportChartCanvas.height = exportChartHeight;
+        const exportCtx = exportChartCanvas.getContext("2d");
 
-        // Fill with dark background
-        ctx.fillStyle = "hsl(223, 84%, 10%)";
-        ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        exportCtx.fillStyle = "hsl(223, 84%, 10%)";
+        exportCtx.fillRect(0, 0, exportWidth, exportChartHeight);
 
-        // Draw team info at the top
-        const quarterWidth = tempCanvas.width / 4;
-        const midWidth = tempCanvas.width / 2;
+        const exportChart = new Chart(exportCtx, {
+          type: currentChart.config.type,
+          data: JSON.parse(JSON.stringify(currentChart.data)),
+          options: {
+            responsive: false,
+            maintainAspectRatio: false,
+            animation: {
+              onComplete: () => {
+                const tempCanvas = document.createElement("canvas");
+                tempCanvas.width = exportWidth;
+                tempCanvas.height = exportChartHeight + teamInfoHeight;
+                const ctx = tempCanvas.getContext("2d");
 
-        // Away team name
-        ctx.fillStyle = "hsl(210 40% 98%)";
-        ctx.font =
-          "bold 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
-        ctx.textAlign = "center";
-        ctx.fillText(awayTeamName, quarterWidth, 45);
+                ctx.fillStyle = "hsl(223, 84%, 10%)";
+                ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-        // Away team score
-        ctx.font =
-          "bold 80px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
-        ctx.fillText(awayTeamScore, quarterWidth, 120);
+                const quarterWidth = exportWidth / 4;
+                const midWidth = exportWidth / 2;
 
-        // VS text
-        ctx.fillStyle = "hsl(215 20.2% 65.1%)";
-        ctx.font =
-          "bold 18px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
-        ctx.fillText("VS", midWidth, 80);
+                ctx.textAlign = "center";
 
-        // Home team name
-        ctx.fillStyle = "hsl(210 40% 98%)";
-        ctx.font =
-          "bold 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
-        ctx.fillText(homeTeamName, quarterWidth * 3, 45);
+                // Away team name
+                ctx.fillStyle = "hsl(210, 40%, 98%)";
+                ctx.font =
+                  "bold 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
+                ctx.fillText(awayTeamName, quarterWidth, 45);
 
-        // Home team score
-        ctx.font =
-          "bold 80px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
-        ctx.fillText(homeTeamScore, quarterWidth * 3, 120);
+                // Away team score
+                ctx.font =
+                  "bold 80px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
+                ctx.fillText(awayTeamScore, quarterWidth, 120);
 
-        // Game status at the bottom of team info
-        ctx.fillStyle = "hsl(215 20.2% 65.1%)";
-        ctx.font =
-          "bold 14px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
-        ctx.fillText(gameStatusText, tempCanvas.width / 2, 135);
+                // VS
+                ctx.fillStyle = "hsl(215, 20.2%, 65.1%)";
+                ctx.font =
+                  "bold 18px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
+                ctx.fillText("VS", midWidth, 80);
 
-        // Draw the chart below the team info, scaled to fit
-        const scaledChartWidth = tempCanvas.width;
-        const scaledChartHeight = tempCanvas.height - teamInfoHeight;
+                // Home team name
+                ctx.fillStyle = "hsl(210, 40%, 98%)";
+                ctx.font =
+                  "bold 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
+                ctx.fillText(homeTeamName, quarterWidth * 3, 45);
 
-        // Create a temporary canvas for the scaled chart
-        const scaledChartCanvas = document.createElement("canvas");
-        scaledChartCanvas.width = scaledChartWidth;
-        scaledChartCanvas.height = scaledChartHeight;
+                // Home team score
+                ctx.font =
+                  "bold 80px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
+                ctx.fillText(homeTeamScore, quarterWidth * 3, 120);
 
-        const scaledCtx = scaledChartCanvas.getContext("2d");
-        scaledCtx.drawImage(
-          originalCanvas,
-          0,
-          0,
-          scaledChartWidth,
-          scaledChartHeight,
-        );
+                // Game status
+                ctx.fillStyle = "hsl(215, 20.2%, 65.1%)";
+                ctx.font =
+                  "bold 14px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
+                ctx.fillText(gameStatusText, midWidth, 135);
 
-        ctx.drawImage(scaledChartCanvas, 0, teamInfoHeight);
+                // Draw the fully-rendered chart below the team info
+                ctx.drawImage(exportChartCanvas, 0, teamInfoHeight);
 
-        tempCanvas.toBlob((blob) => {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
+                exportChart.destroy();
 
-          // Generate filename with timestamp
-          const timestamp = new Date().toLocaleDateString("en-CA");
-          const gameInfo = `${awayTeamName}-VS-${homeTeamName}`;
-          link.download = `${gameInfo}-${gameStatusText}.png`;
-
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
+                tempCanvas.toBlob((blob) => {
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement("a");
+                  link.href = url;
+                  link.download = `${awayTeamName}-VS-${homeTeamName}-${gameStatusText}.png`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  URL.revokeObjectURL(url);
+                });
+              },
+            },
+            plugins: {
+              legend: {
+                display: true,
+                position: "top",
+                labels: {
+                  color: "hsl(210, 40%, 98%)",
+                  font: { size: 14, weight: "500" },
+                  padding: 16,
+                },
+              },
+              tooltip: { enabled: false },
+            },
+            scales: {
+              x: { display: false },
+              y: {
+                title: {
+                  display: true,
+                  text: "Win Probability",
+                  color: "hsl(215, 20.2%, 65.1%)",
+                  font: { size: 14, weight: "500" },
+                },
+                min: 0,
+                max: 1,
+                ticks: {
+                  color: "hsl(215, 20.2%, 65.1%)",
+                  font: { size: 14 },
+                  callback: (value) => (value * 100).toFixed(0) + "%",
+                },
+                grid: {
+                  color: "hsl(217.2, 32.6%, 17.5%)",
+                  drawBorder: false,
+                },
+                border: { display: false },
+              },
+            },
+          },
         });
       }
 
@@ -775,6 +775,8 @@
               document.getElementById("gameStatus").style.display = "none";
               document.getElementById("downloadChartButton").style.display =
                 "none";
+              document.getElementById("refreshButtonHeader").style.display =
+                "none";
 
               loading.style.display = "block";
               loading.innerHTML =
@@ -790,15 +792,12 @@
               }
             });
 
-          // Both refresh buttons call the same function
           document
             .getElementById("refreshButtonHeader")
             .addEventListener("click", refreshCurrentGame);
-
           document
             .getElementById("refreshButtonStatus")
             .addEventListener("click", refreshCurrentGame);
-
           document
             .getElementById("downloadChartButton")
             .addEventListener("click", downloadChartAsPng);
@@ -806,9 +805,7 @@
           document
             .getElementById("gameSelect")
             .addEventListener("change", (e) => {
-              if (e.target.value) {
-                loadGameData(e.target.value);
-              }
+              if (e.target.value) loadGameData(e.target.value);
             });
         } catch (error) {
           loading.style.display = "none";
