@@ -668,11 +668,11 @@
         const awayTeamScore =
           awayTeamDiv.querySelector(".team-score").textContent;
 
-        // Create a larger canvas to include team info at the top
+        // Create a fixed-size canvas for export (1200 x 600)
         const tempCanvas = document.createElement("canvas");
-        const teamInfoHeight = 200;
-        tempCanvas.width = originalCanvas.width;
-        tempCanvas.height = originalCanvas.height + teamInfoHeight;
+        const teamInfoHeight = 150;
+        tempCanvas.width = 1200;
+        tempCanvas.height = 600;
 
         const ctx = tempCanvas.getContext("2d");
 
@@ -687,40 +687,57 @@
         // Away team name
         ctx.fillStyle = "hsl(210 40% 98%)";
         ctx.font =
-          "bold 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
+          "bold 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
         ctx.textAlign = "center";
-        ctx.fillText(awayTeamName, quarterWidth, 40);
+        ctx.fillText(awayTeamName, quarterWidth, 45);
 
         // Away team score
         ctx.font =
-          "bold 72px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
+          "bold 80px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
         ctx.fillText(awayTeamScore, quarterWidth, 120);
 
         // VS text
         ctx.fillStyle = "hsl(215 20.2% 65.1%)";
         ctx.font =
-          "bold 16px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
-        ctx.fillText("VS", midWidth, 75);
+          "bold 18px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
+        ctx.fillText("VS", midWidth, 80);
 
         // Home team name
         ctx.fillStyle = "hsl(210 40% 98%)";
         ctx.font =
-          "bold 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
-        ctx.fillText(homeTeamName, quarterWidth * 3, 40);
+          "bold 28px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
+        ctx.fillText(homeTeamName, quarterWidth * 3, 45);
 
         // Home team score
         ctx.font =
-          "bold 72px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
+          "bold 80px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
         ctx.fillText(homeTeamScore, quarterWidth * 3, 120);
 
         // Game status at the bottom of team info
         ctx.fillStyle = "hsl(215 20.2% 65.1%)";
         ctx.font =
           "bold 14px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto";
-        ctx.fillText(gameStatusText, midWidth, 165);
+        ctx.fillText(gameStatusText, tempCanvas.width / 2, 135);
 
-        // Draw the chart below the team info
-        ctx.drawImage(originalCanvas, 0, teamInfoHeight);
+        // Draw the chart below the team info, scaled to fit
+        const scaledChartWidth = tempCanvas.width;
+        const scaledChartHeight = tempCanvas.height - teamInfoHeight;
+
+        // Create a temporary canvas for the scaled chart
+        const scaledChartCanvas = document.createElement("canvas");
+        scaledChartCanvas.width = scaledChartWidth;
+        scaledChartCanvas.height = scaledChartHeight;
+
+        const scaledCtx = scaledChartCanvas.getContext("2d");
+        scaledCtx.drawImage(
+          originalCanvas,
+          0,
+          0,
+          scaledChartWidth,
+          scaledChartHeight,
+        );
+
+        ctx.drawImage(scaledChartCanvas, 0, teamInfoHeight);
 
         tempCanvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob);
