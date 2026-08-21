@@ -572,15 +572,16 @@
               (c) => c.homeAway === "home",
             );
             if (homeTeam) {
-              if (homeTeam.team.color) {
-                homeTeamColor =
-                  homeTeam.team.color === "000000" &&
-                  homeTeam.team.alternateColor
-                    ? homeTeam.team.alternateColor
-                    : homeTeam.team.color;
-              }
-              homeTeamName = homeTeam.team.displayName;
-            }
+  if (homeTeam.team.color) {
+    homeTeamColor =
+      ["000000", "021018"].includes(homeTeam.team.color) &&
+      homeTeam.team.alternateColor
+        ? homeTeam.team.alternateColor
+        : homeTeam.team.color;
+  }
+
+  homeTeamName = homeTeam.team.displayName;
+}
           }
 
           const data = await fetchGameSummary(eventId, currentSport);
